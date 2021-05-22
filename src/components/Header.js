@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, FormControl, m, Nav, Row } from "react-bootstrap";
+import { Button, Col, Form, FormControl, Nav, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { authService } from "../fbase";
+import { authService, dbService } from "../fbase";
 
 const Header = () => {
   const [check_log_in, set_check_log_in] = useState(false);
+  const [get_nickname, set_get_nickname] = useState("");
 
   const [signInForm, setSignInForm] = useState({
     email: null,
-    passwrod: null,
+    password: null,
   });
 
   const onChange = (e) => {
@@ -22,12 +23,17 @@ const Header = () => {
     });
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     const { email, password } = signInForm;
 
-    authService.signInWithEmailAndPassword(email, password);
+    try {
+      authService.signInWithEmailAndPassword(email, password);
+    } catch (error) {
+      alert(error);
+      console.log(error);
+    }
   };
 
   const onSignOut = () => {
@@ -39,9 +45,23 @@ const Header = () => {
   };
 
   useEffect(() => {
-    authService.onAuthStateChanged((user) => {
+    authService.onAuthStateChanged(async (user) => {
       if (user) {
         set_check_log_in(true);
+
+        const user_email = user.email;
+
+        console.log(user_email);
+
+        await dbService
+          .collection("user_DB")
+          .where("email", "==", user_email)
+          .get()
+          .then((data) => {
+            data.forEach((doc) => {
+              set_get_nickname(doc.data().nickname);
+            });
+          });
       }
     });
   }, []);
@@ -52,7 +72,7 @@ const Header = () => {
         <Nav>
           {check_log_in ? (
             <>
-              <span>{authService.currentUser.email}</span>
+              <span>{get_nickname}</span>
               <Button onClick={onSignOut} variant="outline-info">
                 Sign Out
               </Button>
@@ -64,10 +84,9 @@ const Header = () => {
                   <Col>
                     <FormControl
                       onChange={onChange}
-                      type="email"
+                      type="text"
                       name="email"
                       placeholder="input email"
-                      minLength="6"
                       required
                     />
                   </Col>
@@ -77,7 +96,6 @@ const Header = () => {
                       type="password"
                       name="password"
                       placeholder="input password"
-                      minLength="6"
                       required
                     />
                   </Col>

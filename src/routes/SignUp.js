@@ -9,6 +9,7 @@ const SignUp = () => {
 
   const [signUpForm, setSignUpForm] = useState({
     email: null,
+    nickname: null,
     passwrod: null,
   });
 
@@ -27,22 +28,33 @@ const SignUp = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    const { email, password } = signUpForm;
+    const { email, nickname, password } = signUpForm;
 
     const check_exist_email = await dbService
       .collection("user_DB")
       .where("email", "==", email)
       .get();
 
-    let get_already_use_email;
+    const check_exist_nickname = await dbService
+      .collection("user_DB")
+      .where("nickname", "==", nickname)
+      .get();
 
-    await check_exist_email.forEach((doc) => {
-      get_already_use_email = doc.data().email;
+    let already_use_email;
+    let already_use_nickname;
+
+    await check_exist_nickname.forEach((doc) => {
+      already_use_nickname = doc.data().nickname;
     });
 
-    console.log(`get_already_use_id - ${get_already_use_email}`);
+    await check_exist_email.forEach((doc) => {
+      already_use_email = doc.data().email;
+    });
 
-    if (get_already_use_email) {
+    if (already_use_nickname) {
+      alert("already use nickname");
+      return false;
+    } else if (already_use_email) {
       alert("already use email");
       return false;
     } else {
@@ -52,7 +64,8 @@ const SignUp = () => {
 
       const signUpDate = moment().format("YYYY-MM-DD HH:mm:ss");
 
-      await dbService.collection("user_DB").doc(uid).set({
+      await dbService.collection("user_DB").doc(email).set({
+        nickname,
         uid,
         email,
         password,
@@ -62,6 +75,12 @@ const SignUp = () => {
 
     history.push("/");
   };
+
+  authService.onAuthStateChanged((user) => {
+    if (user) {
+      history.push("/");
+    }
+  });
 
   return (
     <div>
@@ -73,6 +92,14 @@ const SignUp = () => {
           name="email"
           type="email"
           placeholder="input email"
+          required
+        ></FormControl>
+
+        <FormControl
+          onChange={onChange}
+          name="nickname"
+          type="text"
+          placeholder="input nickname"
           required
         ></FormControl>
 
