@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, FormControl, Nav, Row } from "react-bootstrap";
+import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { authService, dbService } from "../fbase";
 
-const Header = () => {
+const Header = (props) => {
+  console.log("Header props", props);
+  const { dispatch } = props;
+
   const [check_log_in, set_check_log_in] = useState(false);
   const [get_nickname, set_get_nickname] = useState("");
 
@@ -60,6 +64,7 @@ const Header = () => {
           .then((data) => {
             data.forEach((doc) => {
               set_get_nickname(doc.data().nickname);
+              dispatch({ type: "user_nickname", payload: doc.data().nickname });
             });
           });
       }
@@ -118,4 +123,8 @@ const Header = () => {
   );
 };
 
-export default Header;
+const getStore = (state) => {
+  console.log("Header.js/getStore state", state);
+};
+
+export default connect(getStore)(Header);

@@ -6,8 +6,14 @@ import { authService, dbService } from "../fbase";
 import shortid from "shortid";
 import moment from "moment";
 import { useHistory } from "react-router";
+import { connect } from "react-redux";
 
-const Write = (arg) => {
+const Write = (props) => {
+  console.log("Write.js props", props);
+  console.log(props.user_nickname_reducer);
+
+  const { user_nickname_reducer } = props;
+
   const [post, set_post] = useState({
     title: "",
     content: "",
@@ -15,10 +21,10 @@ const Write = (arg) => {
 
   const history = useHistory();
 
-  console.log("arg", arg);
-  console.log(arg.match.url);
+  console.log("props", props);
+  console.log(props.match.url);
 
-  let temp = arg.match.url.split("/");
+  let temp = props.match.url.split("/");
   console.log(temp);
   temp = temp[1].split("&");
   console.log(temp);
@@ -46,22 +52,23 @@ const Write = (arg) => {
       alert("need log in");
       return false;
     } else {
-      const url = shortid.generate();
+      const post_url = shortid.generate();
 
       const { title, content } = post;
 
       const new_post = {
-        url,
+        creator_nickname: user_nickname_reducer,
+        post_url,
         title,
         content,
-        createdAt: moment().format("YYYY-MM-DD HH:mm:ss"),
-        creatorUid: authService.currentUser.uid,
-        creatorEmail: authService.currentUser.email,
+        created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+        creator_uid: authService.currentUser.uid,
+        creator_email: authService.currentUser.email,
       };
 
-      dbService.collection(`${found_board_name}`).doc(url).set(new_post);
+      dbService.collection(`${found_board_name}`).doc(post_url).set(new_post);
 
-      history.push(`/${found_board_name}`);
+      history.push(`/${found_board_name}&page=1`);
     }
   };
 
@@ -109,4 +116,14 @@ const Write = (arg) => {
   );
 };
 
-export default Write;
+const getStore = (state) => {
+  console.log("Write.js/getStore state", state);
+
+  const { user_nickname_reducer } = state;
+
+  return {
+    user_nickname_reducer,
+  };
+};
+
+export default connect(getStore)(Write);

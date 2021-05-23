@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { authService } from "../fbase";
 import AppRouter from "./AppRouter";
 import "../css/reset.css";
-import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
   const [init, setInit] = useState(false);

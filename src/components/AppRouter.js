@@ -6,6 +6,7 @@ import SignUp from "../routes/SignUp";
 import Board from "../routes/Board";
 import Write from "../routes/Write";
 import "../css/AppRouter.css";
+import Post_Detail from "../routes/Post_Detail";
 
 const AppRouter = () => {
   return (
@@ -20,11 +21,11 @@ const AppRouter = () => {
             Home
           </Button>
 
-          <Button variant="primary" as={Link} to="/board1">
+          <Button variant="primary" as={Link} to="/board1&page=1">
             Board1
           </Button>
 
-          <Button variant="primary" as={Link} to="/board2">
+          <Button variant="primary" as={Link} to="/board2&page=1">
             Board2
           </Button>
         </div>
@@ -32,10 +33,11 @@ const AppRouter = () => {
         <div>
           <Switch>
             <Route exact path="/"></Route>
-            <Route path="/board1" component={Board}></Route>
-            <Route path="/board2" component={Board}></Route>
-            <Route path="/signup" component={SignUp}></Route>
-            <Route path="/:id&write" component={Write}></Route>
+            <Route exact path="/board1&page=:id" component={Board}></Route>
+            <Route exact path="/board2&page=:id" component={Board}></Route>
+            <Route exact path="/signup" component={SignUp}></Route>
+            <Route exact path="/:id&write" component={Write}></Route>
+            <Route exact path="/:id/:id" component={Post_Detail}></Route>
           </Switch>
         </div>
       </div>
