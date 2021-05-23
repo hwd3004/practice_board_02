@@ -5,12 +5,15 @@ import { Button, Form, FormControl } from "react-bootstrap";
 import { authService, dbService } from "../fbase";
 import shortid from "shortid";
 import moment from "moment";
+import { useHistory } from "react-router";
 
 const Write = (arg) => {
   const [post, set_post] = useState({
     title: "",
     content: "",
   });
+
+  const history = useHistory();
 
   console.log("arg", arg);
   console.log(arg.match.url);
@@ -39,20 +42,27 @@ const Write = (arg) => {
   const onSubmit = (e) => {
     e.preventDefault();
 
-    const url = shortid.generate();
+    if (!authService.currentUser) {
+      alert("need log in");
+      return false;
+    } else {
+      const url = shortid.generate();
 
-    const { title, content } = post;
+      const { title, content } = post;
 
-    const new_post = {
-      url,
-      title,
-      content,
-      createdAt: moment().format("YYYY-MM-DD HH:mm:ss"),
-      creatorUid: authService.currentUser.uid,
-      creatorEmail: authService.currentUser.email,
-    };
+      const new_post = {
+        url,
+        title,
+        content,
+        createdAt: moment().format("YYYY-MM-DD HH:mm:ss"),
+        creatorUid: authService.currentUser.uid,
+        creatorEmail: authService.currentUser.email,
+      };
 
-    dbService.collection(`${found_board_name}`).doc(url).set(new_post);
+      dbService.collection(`${found_board_name}`).doc(url).set(new_post);
+
+      history.push(`/${found_board_name}`);
+    }
   };
 
   return (
