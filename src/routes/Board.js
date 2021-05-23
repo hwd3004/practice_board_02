@@ -89,16 +89,59 @@ const Board = (props) => {
   };
 
   const page_first = () => {
-    if (current_page_num <= 10) {
-      history.push(`/${found_board_name}&page=1`);
-    } else {
-      history.push(`/${found_board_name}&page=${current_page_num - 10}`);
-    }
+    // if (current_page_num <= 10) {
+    //   history.push(`/${found_board_name}&page=1`);
+    // } else {
+    //   history.push(`/${found_board_name}&page=${current_page_num - 10}`);
+    // }
+
+    history.push(`/${found_board_name}&page=1`);
   };
 
   const page_last = () => {
-    history.push(`/${found_board_name}&page=${current_page_num + 10}`);
+    // history.push(`/${found_board_name}&page=${current_page_num + 10}`);
+
+    const last_page = Math.floor(current_page_num / 10) * 10 + 9;
+    console.log(last_page);
+
+    history.push(`/${found_board_name}&page=${last_page}`);
   };
+
+  let page_list = [];
+
+  const get_page_list = () => {
+    // console.log("current_page_num / 10 + 1 =", current_page_num / 10 + 1);
+
+    const start_page = Math.floor(current_page_num / 10) * 10;
+    console.log(start_page);
+
+    const end_page = Math.floor(current_page_num / 10 + 1) * 10;
+    console.log(end_page);
+
+    if (current_page_num < 10) {
+      for (let index = 1; index < 10; index++) {
+        page_list[index] = index;
+      }
+    } else {
+      let i = 1;
+      for (let index = start_page; index < end_page; index++) {
+        page_list[i] = index;
+        i++;
+      }
+    }
+  };
+
+  const page_select = (e) => {
+    console.log(e.target.textContent);
+
+    const {
+      target: { textContent },
+    } = e;
+
+    history.push(`/${found_board_name}&page=${textContent}`);
+  };
+
+  get_page_list();
 
   useEffect(() => {
     get_post();
@@ -131,6 +174,13 @@ const Board = (props) => {
       <Pagination>
         <Pagination.First onClick={page_first} />
         <Pagination.Prev onClick={page_prev} />
+        {page_list.map((item, index) => {
+          return (
+            <Pagination.Item key={index} onClick={page_select}>
+              {item}
+            </Pagination.Item>
+          );
+        })}
         <Pagination.Next onClick={page_next} />
         <Pagination.Last onClick={page_last} />
       </Pagination>
