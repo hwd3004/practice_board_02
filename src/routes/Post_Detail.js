@@ -54,11 +54,13 @@ const Post_Detail = (props) => {
         <h3>{post.title}</h3>
         <hr></hr>
         <p>
-          {post.creator_nickname} | {post.created_at}{" "}
+          {post.creator_nickname} | {post.created_at}
         </p>
         <hr></hr>
         <div>{ReactHtmlParser(post.content)}</div>
       </div>
+
+      <br></br>
 
       <Button as={Link} to={`/${link_back}`}>
         Back

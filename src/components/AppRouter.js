@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, Redirect, Route, Switch } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import Header from "./Header";
 import SignUp from "../routes/SignUp";
@@ -38,6 +38,8 @@ const AppRouter = () => {
             <Route exact path="/signup" component={SignUp}></Route>
             <Route exact path="/:id&write" component={Write}></Route>
             <Route exact path="/:id/:id" component={Post_Detail}></Route>
+
+            <Redirect from="*" to="/"></Redirect>
           </Switch>
         </div>
       </div>

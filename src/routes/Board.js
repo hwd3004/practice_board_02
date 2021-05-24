@@ -8,6 +8,8 @@ const Board = (props) => {
     match: { url },
   } = props;
 
+  const [loading, set_loading] = useState(false);
+
   console.log(url);
 
   const history = useHistory();
@@ -63,6 +65,8 @@ const Board = (props) => {
         set_post_list((prev) => [...prev, post_obj]);
       });
     }
+
+    set_loading(true);
   };
 
   const click_write_btn = (e) => {
@@ -150,6 +154,7 @@ const Board = (props) => {
   return (
     <div>
       <div>
+        {loading ? <></> : <>loading posts...</>}
         <Table>
           <tbody>
             {post_list.map((item, index) => {
